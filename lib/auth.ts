@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt'
   },
   pages: {
-    signIn: '/login'
+    signIn: '/auth/login'
   },
   jwt: {
     maxAge: 60 * 60 * 24
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       const dbUser = await db.user.findFirst({
         where: {
-          id: token.id
+          email: token.email
         }
       })
 
