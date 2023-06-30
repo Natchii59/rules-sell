@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CardModel } from '@/types'
 
@@ -80,6 +81,21 @@ query FetchCardModelsByIds($ids: [ID!]!) {
       price: card.price
     }
   })
+}
+
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const id = params.id
+
+  const user = await getUser(id)
+
+  return {
+    title: `${user.name}`
+  }
 }
 
 export default async function UserPage({ params }: UserPageProps) {

@@ -3,6 +3,8 @@ import localFont from 'next/font/local'
 
 import '@/styles/globals.css'
 
+import { Metadata } from 'next'
+
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/toaster'
@@ -23,7 +25,7 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`
