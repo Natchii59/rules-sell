@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,7 +15,8 @@ import {
 } from '@tanstack/react-table'
 import { ArrowUpDown } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -30,6 +32,7 @@ export type CardSell = {
   artistName: string
   serial: number
   season: number
+  slug: string
   price: number | null
 }
 
@@ -66,7 +69,17 @@ export const columns: ColumnDef<CardSell>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div>#{row.getValue('serial')}</div>
+    cell: ({ row }) => (
+      <Link
+        href={`https://rules.art/card/${row.original.slug}/${row.getValue(
+          'serial'
+        )}`}
+        target='_blank'
+        className={cn(buttonVariants({ variant: 'link' }), 'h-auto p-0')}
+      >
+        #{row.getValue('serial')}
+      </Link>
+    )
   },
   {
     accessorKey: 'season',

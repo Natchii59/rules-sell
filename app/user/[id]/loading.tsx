@@ -1,6 +1,6 @@
 import { Icons } from '@/components/icons'
 
-export default function SellAddLoading() {
+export default function UserLoading() {
   return (
     <div className='flex h-full flex-col items-center justify-center'>
       <Icons.spinner className='h-8 w-8 animate-spin' />

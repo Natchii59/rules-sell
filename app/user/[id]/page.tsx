@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { CardModel } from '@/types'
 
 import { db } from '@/lib/db'
+import { UserAvatar } from '@/components/user-avatar'
 import { UserCardTable } from '@/components/user-card-table'
 
 interface UserPageProps {
@@ -75,6 +76,7 @@ query FetchCardModelsByIds($ids: [ID!]!) {
       artistName: model.artistName,
       serial: card.serial,
       season: model.season,
+      slug: model.slug,
       price: card.price
     }
   })
@@ -84,5 +86,14 @@ export default async function UserPage({ params }: UserPageProps) {
   const user = await getUser(params.id)
   const cards = await getUserCards(params.id)
 
-  return <UserCardTable data={cards} />
+  return (
+    <>
+      <div className='flex items-center gap-2'>
+        <UserAvatar user={user} />
+        <h1 className='font-heading text-2xl'>{user.name}</h1>
+      </div>
+
+      <UserCardTable data={cards} />
+    </>
+  )
 }

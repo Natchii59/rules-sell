@@ -10,7 +10,7 @@ export default withAuth(
 
     if (isAuthPage) {
       if (isAuth) {
-        return NextResponse.redirect(new URL('/', req.url))
+        return NextResponse.redirect(new URL('/sell', req.url))
       }
 
       return null

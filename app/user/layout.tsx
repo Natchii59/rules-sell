@@ -1,7 +1,10 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { navbarConfig } from '@/config/navbar'
 import { getCurrentUser } from '@/lib/session'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
 import { MainNav } from '@/components/main-nav'
 import { UserAccountNav } from '@/components/user-account-nav'
 
@@ -10,21 +13,28 @@ export default async function SellLayout({
 }: React.PropsWithChildren) {
   const user = await getCurrentUser()
 
-  if (!user) return notFound()
-
   return (
     <div className='flex min-h-screen flex-col space-y-6'>
       <header className='sticky top-0 z-40 border-b bg-background'>
         <div className='container flex h-16 items-center justify-between py-4'>
           <MainNav items={navbarConfig.mainNav} />
-          <UserAccountNav
-            user={{
-              id: user.id,
-              name: user.name,
-              image: user.image,
-              email: user.email
-            }}
-          />
+          {user ? (
+            <UserAccountNav
+              user={{
+                id: user.id,
+                name: user.name,
+                image: user.image,
+                email: user.email
+              }}
+            />
+          ) : (
+            <Link
+              href='/auth/login'
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
+            >
+              Login
+            </Link>
+          )}
         </div>
       </header>
 

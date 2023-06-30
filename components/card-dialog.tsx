@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { CardModel } from '@/types'
 import { useZact } from 'zact/client'
+import { z } from 'zod'
 
 import { cn } from '@/lib/utils'
 import { addCardAction } from '@/app/sell/add/actions'
@@ -33,7 +34,7 @@ export default function CardDialog({ cardModel }: CardModelProps) {
   const [serial, setSerial] = useState<number>(1)
   const [price, setPrice] = useState<number>(0)
 
-  const { mutate, isLoading, data } = useZact(addCardAction)
+  const { mutate, isLoading, data, error } = useZact(addCardAction)
 
   useEffect(() => {
     if (!data) return
@@ -60,6 +61,17 @@ export default function CardDialog({ cardModel }: CardModelProps) {
       setOpen(false)
     }
   }, [data])
+
+  useEffect(() => {
+    if (!error) return
+
+    if (error.message.startsWith('Validation error')) {
+      toast({
+        title: 'Error',
+        description: error.message.replace('Validation error: ', '')
+      })
+    }
+  }, [error])
 
   return (
     <Dialog key={cardModel.id} open={open} onOpenChange={setOpen}>
@@ -104,10 +116,7 @@ export default function CardDialog({ cardModel }: CardModelProps) {
               className='col-span-3'
               value={serial}
               onChange={e => {
-                const value =
-                  e.target.value === '' || Number(e.target.value) === 0
-                    ? 1
-                    : Number(e.target.value)
+                const value = Number(e.target.value)
                 setSerial(value)
               }}
             />
