@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Icons } from '@/components/icons'
 
-import CardDialog from './(components)/card-dialog'
+import CardsFilter from './(components)/cards-filter'
 
 async function fetchAllCardModels() {
   const QUERY = `
@@ -54,11 +54,7 @@ export default async function BuyAddPage() {
         <h1 className='font-bold'>Add Card to buy</h1>
       </div>
 
-      <div className='flex flex-wrap justify-center gap-2'>
-        {cardModels.map(cardModel => (
-          <CardDialog key={cardModel.id} cardModel={cardModel} />
-        ))}
-      </div>
+      <CardsFilter cardModels={cardModels} />
     </>
   )
 }
