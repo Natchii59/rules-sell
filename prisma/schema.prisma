@@ -67,13 +67,21 @@ model User {
 }
 
 model Card {
-  id     String @id @default(cuid())
-  cardId String @map("card_id")
-  serial Int
-  price  Int?
+  id          String      @id @default(cuid())
+  cardId      String      @map("card_id")
+  listingType ListingType @map("listing_type")
+  serial      Int?
+  price       Int?
+  want        String?
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
   @@map("cards")
+}
+
+enum ListingType {
+  BUY
+  SELL
+  TRADE
 }

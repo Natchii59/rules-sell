@@ -4,14 +4,10 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { CardModel } from '@/types'
 import { useZact } from 'zact/client'
-import { z } from 'zod'
 
 import { cn } from '@/lib/utils'
-import { addCardAction } from '@/app/sell/add/actions'
-
-import { Icons } from './icons'
-import { Button } from './ui/button'
-import { Card, CardContent, CardFooter } from './ui/card'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -20,10 +16,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from './ui/dialog'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
-import { toast } from './ui/use-toast'
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from '@/components/ui/use-toast'
+import { Icons } from '@/components/icons'
+
+import { addSellCardAction } from '../actions'
 
 interface CardModelProps {
   cardModel: CardModel
@@ -34,7 +33,7 @@ export default function CardDialog({ cardModel }: CardModelProps) {
   const [serial, setSerial] = useState<number>(1)
   const [price, setPrice] = useState<number>(0)
 
-  const { mutate, isLoading, data, error } = useZact(addCardAction)
+  const { mutate, isLoading, data, error } = useZact(addSellCardAction)
 
   useEffect(() => {
     if (!data) return
@@ -111,14 +110,10 @@ export default function CardDialog({ cardModel }: CardModelProps) {
             <Input
               id='serial'
               type='number'
-              min={1}
               required
               className='col-span-3'
               value={serial}
-              onChange={e => {
-                const value = Number(e.target.value)
-                setSerial(value)
-              }}
+              onChange={e => setSerial(Number(e.target.value))}
             />
           </div>
           <div className='grid grid-cols-4 items-center gap-4'>
@@ -128,7 +123,6 @@ export default function CardDialog({ cardModel }: CardModelProps) {
             <Input
               id='price'
               type='number'
-              min={0}
               placeholder='Optionnal'
               className='col-span-3'
               value={price}

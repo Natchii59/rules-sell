@@ -3,11 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useZact } from 'zact/client'
 
-import { deleteCardAction, editCardAction } from '@/app/sell/actions'
-
-import { Icons } from './icons'
-import { CardSell } from './sell-card-table'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -16,32 +12,36 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from './ui/dialog'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
-import { toast } from './ui/use-toast'
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from '@/components/ui/use-toast'
+import { Icons } from '@/components/icons'
 
-interface SellCardActionsProps {
-  card: CardSell
+import { deleteTradeCardAction, editTradeCardAction } from '../actions'
+import { CardDataTable } from './card-table'
+
+interface CardActionsProps {
+  card: CardDataTable
 }
 
-export default function SellCardActions({ card }: SellCardActionsProps) {
+export function CardActions({ card }: CardActionsProps) {
   const [editOpen, setEditOpen] = useState<boolean>(false)
 
-  const [serial, setSerial] = useState<number>(card.serial)
-  const [price, setPrice] = useState<number>(card.price ?? 0)
+  const [serial, setSerial] = useState<number>(card.serial || 1)
+  const [want, setWant] = useState<string>(card.want || '')
 
   const {
     mutate: mutateEdit,
     isLoading: isLoadingEdit,
     data: dataEdit
-  } = useZact(editCardAction)
+  } = useZact(editTradeCardAction)
 
   const {
     mutate: mutateDelete,
     isLoading: isLoadingDelete,
     data: dataDelete
-  } = useZact(deleteCardAction)
+  } = useZact(deleteTradeCardAction)
 
   useEffect(() => {
     if (!dataEdit) return
@@ -94,9 +94,9 @@ export default function SellCardActions({ card }: SellCardActionsProps) {
 
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit your card to sell</DialogTitle>
+            <DialogTitle>Edit your card to trade</DialogTitle>
             <DialogDescription>
-              You are editing your card to sell.
+              You are editing your card to trade.
             </DialogDescription>
           </DialogHeader>
 
@@ -108,37 +108,29 @@ export default function SellCardActions({ card }: SellCardActionsProps) {
               <Input
                 id='serial'
                 type='number'
-                min={1}
                 required
                 className='col-span-3'
                 value={serial}
-                onChange={e => {
-                  const value =
-                    e.target.value === '' || Number(e.target.value) === 0
-                      ? 1
-                      : Number(e.target.value)
-                  setSerial(value)
-                }}
+                onChange={e => setSerial(Number(e.target.value))}
               />
             </div>
             <div className='grid grid-cols-4 items-center gap-4'>
-              <Label htmlFor='price' className='text-right'>
-                Price
+              <Label htmlFor='want' className='text-right'>
+                Want
               </Label>
               <Input
-                id='price'
-                type='number'
-                min={0}
-                placeholder='Optionnal'
+                id='want'
+                type='text'
                 className='col-span-3'
-                value={price}
-                onChange={e => setPrice(Number(e.target.value))}
+                placeholder='What do you want? (Optional)'
+                value={want}
+                onChange={e => setWant(e.target.value)}
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button onClick={() => mutateEdit({ id: card.id, serial, price })}>
+            <Button onClick={() => mutateEdit({ id: card.id, serial, want })}>
               {isLoadingEdit && (
                 <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
               )}

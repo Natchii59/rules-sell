@@ -3,8 +3,9 @@ import { CardModel } from '@/types'
 
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import CardDialog from '@/components/card-dialog'
 import { Icons } from '@/components/icons'
+
+import CardDialog from './(components)/card-dialog'
 
 async function fetchAllCardModels() {
   const QUERY = `
@@ -36,22 +37,22 @@ query FetchAllCardModels {
   return data.allCardModels as CardModel[]
 }
 
-export default async function PageAddSell() {
+export default async function TradeAddPage() {
   const cardModels = await fetchAllCardModels()
 
   return (
     <>
-      <Link
-        href='/sell'
-        className={cn(buttonVariants({ variant: 'ghost' }), 'self-start')}
-      >
-        <>
+      <div className='mb-4 flex items-center gap-4'>
+        <Link
+          href='/me/trade'
+          className={cn(buttonVariants({ variant: 'link' }), 'p-0')}
+        >
           <Icons.left className='mr-2 h-4 w-4' />
           Back
-        </>
-      </Link>
+        </Link>
 
-      <h1 className='mb-4 font-heading text-2xl'>Add Card to sell</h1>
+        <h1 className='font-bold'>Add Card to trade</h1>
+      </div>
 
       <div className='flex flex-wrap justify-center gap-2'>
         {cardModels.map(cardModel => (

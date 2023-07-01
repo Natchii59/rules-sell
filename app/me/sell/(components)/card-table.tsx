@@ -27,20 +27,23 @@ import {
   TableRow
 } from '@/components/ui/table'
 
-export type CardSell = {
+import { CardActions } from './card-actions'
+
+export interface CardDataTable {
   id: string
-  artistName: string
-  serial: number
-  season: number
   slug: string
+  artistName: string
+  serial: number | null
+  scarcity: string
+  season: number
   price: number | null
 }
 
-interface CardSellTableProps {
-  data: CardSell[]
+interface CardTableProps {
+  data: CardDataTable[]
 }
 
-export const columns: ColumnDef<CardSell>[] = [
+const columns: ColumnDef<CardDataTable>[] = [
   {
     accessorKey: 'artistName',
     header: ({ column }) => {
@@ -79,6 +82,23 @@ export const columns: ColumnDef<CardSell>[] = [
       >
         #{row.getValue('serial')}
       </Link>
+    )
+  },
+  {
+    accessorKey: 'scarcity',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Scarcity
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      )
+    },
+    cell: ({ row }) => (
+      <div className='capitalize'>{row.getValue('scarcity')}</div>
     )
   },
   {
@@ -123,10 +143,17 @@ export const columns: ColumnDef<CardSell>[] = [
 
       return <div className='font-medium'>{formatted}</div>
     }
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      return <CardActions card={row.original} />
+    }
   }
 ]
 
-export function UserCardTable({ data }: CardSellTableProps) {
+export function CardTable({ data }: CardTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

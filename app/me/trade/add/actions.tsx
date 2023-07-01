@@ -6,10 +6,10 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
-export const addCardAction = zact(
+export const addTradeCardAction = zact(
   z.object({
     serial: z.number().min(1),
-    price: z.number().optional(),
+    want: z.string().optional().nullable(),
     cardId: z.string()
   })
 )(async input => {
@@ -25,9 +25,10 @@ export const addCardAction = zact(
     await db.card.create({
       data: {
         serial: input.serial,
-        price: input.price === 0 ? null : input.price,
+        listingType: 'TRADE',
         cardId: input.cardId,
-        userId: user.id
+        userId: user.id,
+        want: input.want
       }
     })
 

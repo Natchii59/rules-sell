@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,7 +15,8 @@ import {
 } from '@tanstack/react-table'
 import { ArrowUpDown } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -25,21 +27,19 @@ import {
   TableRow
 } from '@/components/ui/table'
 
-import SellCardActions from './sell-card-actions'
-
-export type CardSell = {
+export interface CardDataTable {
   id: string
   artistName: string
-  serial: number
+  scarcity: string
   season: number
-  price: number | null
+  want: string | null
 }
 
-interface CardSellTableProps {
-  data: CardSell[]
+interface CardTableProps {
+  data: CardDataTable[]
 }
 
-export const columns: ColumnDef<CardSell>[] = [
+export const columns: ColumnDef<CardDataTable>[] = [
   {
     accessorKey: 'artistName',
     header: ({ column }) => {
@@ -56,19 +56,21 @@ export const columns: ColumnDef<CardSell>[] = [
     cell: ({ row }) => <div>{row.getValue('artistName')}</div>
   },
   {
-    accessorKey: 'serial',
+    accessorKey: 'scarcity',
     header: ({ column }) => {
       return (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Serial
+          Scarcity
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       )
     },
-    cell: ({ row }) => <div>#{row.getValue('serial')}</div>
+    cell: ({ row }) => (
+      <div className='capitalize'>{row.getValue('scarcity')}</div>
+    )
   },
   {
     accessorKey: 'season',
@@ -86,43 +88,15 @@ export const columns: ColumnDef<CardSell>[] = [
     cell: ({ row }) => <div>Season {row.getValue('season')}</div>
   },
   {
-    accessorKey: 'price',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Price
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      if (!row.getValue('price'))
-        return <div className='font-medium'>No price</div>
-
-      const price = parseFloat(row.getValue('price'))
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(price)
-
-      return <div className='font-medium'>{formatted}</div>
-    }
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      return <SellCardActions card={row.original} />
-    }
+    accessorKey: 'want',
+    header: 'Want',
+    cell: ({ row }) => (
+      <div className='max-w-xs break-words'>{row.getValue('want')}</div>
+    )
   }
 ]
 
-export function SellCardTable({ data }: CardSellTableProps) {
+export function CardTable({ data }: CardTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

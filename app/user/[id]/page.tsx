@@ -1,10 +1,7 @@
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { CardModel } from '@/types'
+import Link from 'next/link'
 
-import { db } from '@/lib/db'
-import { UserAvatar } from '@/components/user-avatar'
-import { UserCardTable } from '@/components/user-card-table'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
 
 interface UserPageProps {
   params: {
@@ -12,104 +9,18 @@ interface UserPageProps {
   }
 }
 
-async function getUser(id: string) {
-  const user = await db.user.findUnique({
-    where: {
-      id
-    },
-    select: {
-      id: true,
-      name: true,
-      image: true
-    }
-  })
-
-  if (!user) return notFound()
-
-  return user
-}
-
-async function getUserCards(userId: string) {
-  const cards = await db.card.findMany({
-    where: {
-      userId
-    }
-  })
-
-  const QUERY = `
-query FetchCardModelsByIds($ids: [ID!]!) {
-  cardModelsByIds(ids: $ids) {
-    id
-    uid
-    slug
-    pictureUrl(derivative: "width=512")
-    scarcity {
-      name
-    }
-    season
-    artistName
-  }
-}
-`
-
-  const result = await fetch('https://api.rules.art/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      query: QUERY,
-      variables: { ids: cards.map(card => card.cardId) }
-    })
-  })
-
-  const { data } = (await result.json()) as {
-    data: { cardModelsByIds: CardModel[] }
-  }
-
-  return cards.map(card => {
-    const model = data.cardModelsByIds.find(
-      model => model.id === card.cardId
-    ) as CardModel
-
-    return {
-      id: card.id,
-      artistName: model.artistName,
-      serial: card.serial,
-      season: model.season,
-      slug: model.slug,
-      price: card.price
-    }
-  })
-}
-
-type Props = {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const id = params.id
-
-  const user = await getUser(id)
-
-  return {
-    title: `${user.name}`
-  }
-}
-
-export default async function UserPage({ params }: UserPageProps) {
-  const user = await getUser(params.id)
-  const cards = await getUserCards(params.id)
-
+export default function UserPage({ params }: UserPageProps) {
   return (
-    <>
-      <div className='flex items-center gap-2'>
-        <UserAvatar user={user} />
-        <h1 className='font-heading text-2xl'>{user.name}</h1>
-      </div>
-
-      <UserCardTable data={cards} />
-    </>
+    <div className='mt-4 flex items-center gap-2'>
+      <Link href={`/user/${params.id}/sell`} className={cn(buttonVariants())}>
+        Sell
+      </Link>
+      <Link href={`/user/${params.id}/trade`} className={cn(buttonVariants())}>
+        Trade
+      </Link>
+      <Link href={`/user/${params.id}/buy`} className={cn(buttonVariants())}>
+        Buy
+      </Link>
+    </div>
   )
 }

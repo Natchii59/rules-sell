@@ -5,11 +5,11 @@ import { z } from 'zod'
 
 import { db } from '@/lib/db'
 
-export const editCardAction = zact(
+export const editSellCardAction = zact(
   z.object({
     id: z.string(),
     serial: z.number().min(1),
-    price: z.number().optional()
+    price: z.number().min(0).optional().nullable()
   })
 )(async input => {
   try {
@@ -34,7 +34,7 @@ export const editCardAction = zact(
   }
 })
 
-export const deleteCardAction = zact(
+export const deleteSellCardAction = zact(
   z.object({
     id: z.string()
   })

@@ -15,10 +15,10 @@ export default function Home() {
           </h1>
 
           <Link
-            href='/sell'
+            href='/me'
             className={cn(buttonVariants({ variant: 'outline' }))}
           >
-            Sell your cards
+            List your cards
           </Link>
         </div>
       </div>

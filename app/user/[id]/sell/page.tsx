@@ -1,21 +1,20 @@
-import Link from 'next/link'
 import { CardModel } from '@/types'
 
 import { db } from '@/lib/db'
-import { getCurrentUser } from '@/lib/session'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
-import { Icons } from '@/components/icons'
-import { SellCardTable } from '@/components/sell-card-table'
 
-async function getCards() {
-  const user = await getCurrentUser()
+import { CardTable } from './card-table'
 
-  if (!user) return
+interface UserPageProps {
+  params: {
+    id: string
+  }
+}
 
+async function getUserCards(userId: string) {
   const cards = await db.card.findMany({
     where: {
-      userId: user.id
+      userId,
+      listingType: 'SELL'
     }
   })
 
@@ -46,12 +45,11 @@ query FetchCardModelsByIds($ids: [ID!]!) {
     })
   })
 
-  const { data } = (await result.json()) as {
-    data: { cardModelsByIds: CardModel[] }
-  }
+  const { data } = await result.json()
+  const cardModels = data.cardModelsByIds as CardModel[]
 
   return cards.map(card => {
-    const model = data.cardModelsByIds.find(
+    const model = cardModels.find(
       model => model.id === card.cardId
     ) as CardModel
 
@@ -59,22 +57,16 @@ query FetchCardModelsByIds($ids: [ID!]!) {
       id: card.id,
       artistName: model.artistName,
       serial: card.serial,
+      scarcity: model.scarcity.name,
       season: model.season,
+      slug: model.slug,
       price: card.price
     }
   })
 }
 
-export default async function PageSell() {
-  const data = await getCards()
+export default async function UserPage({ params }: UserPageProps) {
+  const cards = await getUserCards(params.id)
 
-  return (
-    <div>
-      <Link href='/sell/add' className={cn(buttonVariants())}>
-        <Icons.plus className='mr-2 h-4 w-4' />
-        Add card to sell
-      </Link>
-      {data ? <SellCardTable data={data} /> : <div>No Cards.</div>}
-    </div>
-  )
+  return <CardTable data={cards} />
 }

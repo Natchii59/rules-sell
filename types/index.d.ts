@@ -16,7 +16,7 @@ export type NavItem = {
 
 export type MainNavItem = NavItem
 
-export type CardModel = {
+export interface CardModel {
   id: string
   uid: number
   slug: string

@@ -5,9 +5,7 @@ import { getCurrentUser } from '@/lib/session'
 import { MainNav } from '@/components/main-nav'
 import { UserAccountNav } from '@/components/user-account-nav'
 
-export default async function SellLayout({
-  children
-}: React.PropsWithChildren) {
+export default async function MeLayout({ children }: React.PropsWithChildren) {
   const user = await getCurrentUser()
 
   if (!user) return notFound()
